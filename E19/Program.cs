@@ -172,35 +172,49 @@ namespace Esercizio19
 
         static void ControllaChiVince(ref int[,] mat) {
             // Controlla verticale
-            int haVinto = ControllaVerticale(ref mat);
-            if (haVinto != 0) {
-                Console.WriteLine("Ha vinto il colore: " + haVinto + " !!!!!!");
+            int coloreVincente = ControllaVerticale(ref mat);
+            if (coloreVincente != 0) {
+                Console.WriteLine("Ha vinto il colore: " + DecodificaColore(coloreVincente) + " !!!!!!");
                 Console.ReadKey();
                 Environment.Exit(0);
             }
             // Controlla orizzontale
-            /*
-            int haVinto = ControllaOrizzontale(ref mat);
-            if (haVinto != 0) {
-                Console.WriteLine("Ha vinto il colore: " + haVinto + " !!!!!!");
+            coloreVincente = ControllaOrizzontale(ref mat);
+            if (coloreVincente != 0) {
+                Console.WriteLine("Ha vinto il colore: " + DecodificaColore(coloreVincente) + " !!!!!!");
+                Console.ReadKey();
+                Environment.Exit(0);
             }
-            int haVinto = ControllaDiagonale(ref mat);
-            if (haVinto != 0) {
-                Console.WriteLine("Ha vinto il colore: " + haVinto + " !!!!!!");
+
+            coloreVincente = ControllaDiagonaleDx(ref mat);
+            if (coloreVincente != 0) {
+                Console.WriteLine("Ha vinto il colore: " + DecodificaColore(coloreVincente) + " !!!!!!");
+                Console.ReadKey();
+                Environment.Exit(0);
             }
-            */
+
+            coloreVincente = ControllaDiagonaleSx(ref mat);
+            if (coloreVincente != 0) {
+                Console.WriteLine("Ha vinto il colore: " + DecodificaColore(coloreVincente) + " !!!!!!");
+                Console.ReadKey();
+                Environment.Exit(0);
+            }
+        }
+
+        static string DecodificaColore(int col) {
+            return col == 1 ? "ROSSO" : "GIALLO";
         }
 
         static int ControllaVerticale(ref int[,] mat) {
-            int contatore = 1;
-            for (int colonna = 0; colonna < 7; colonna++) {
-                int coloreDaControllare = mat[7,colonna];
+            for (int colonna = 0; colonna < 8; colonna++) {
+                int coloreDaControllare = mat[7, colonna];
+                int contatore = 1;
                 for(int riga = 6; riga >= 0; riga--) {
-                    if (mat[riga, colonna] == coloreDaControllare) {
+                    if (mat[riga, colonna] == coloreDaControllare && coloreDaControllare != 0) {
                         contatore++;
                     } else {
                         coloreDaControllare = mat[riga, colonna];
-                        contatore = 0;
+                        contatore = 1;
                     }
                     if (contatore == 4) {
                         return coloreDaControllare;
@@ -209,6 +223,36 @@ namespace Esercizio19
             }
             return 0;
         }
+
+        static int ControllaOrizzontale(ref int[,] mat) {
+            for (int riga = 7; riga >= 0; riga--) {
+                int coloreDaControllare = mat[riga, 0];
+                int contatore = 1;
+                for(int colonna = 1; colonna < 8; colonna++) {
+                    if (mat[riga, colonna] == coloreDaControllare && coloreDaControllare != 0) {
+                        contatore++;
+                    } else {
+                        coloreDaControllare = mat[riga, colonna];
+                        contatore = 1;
+                    }
+                    if (contatore == 4) {
+                        return coloreDaControllare;
+                    }
+                }
+            }
+            return 0;
+        }
+
+        static int ControllaDiagonaleDx(ref int[,] mat) {
+            // TODO: to implement!
+            return 0;
+        }
+
+        static int ControllaDiagonaleSx(ref int[,] mat) {
+            // TODO: to implement!
+            return 0;
+        }
+
 
 // ------------------------------------------------------------------------------------------------
 
