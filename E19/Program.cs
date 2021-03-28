@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Esercizio19
+namespace esercizio_forza_4
 {
     class Program
     {
@@ -16,21 +20,16 @@ namespace Esercizio19
                 Turno = 2 ==> GIALLO
             */
 
-            int[,] matrice = new int[8, 8];
-
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
 
-            /*
-            InizializzaMatrice(ref matrice);
-            StampaMatrice(ref matrice);
-            System.Console.WriteLine("Press any key to exit.");
-            System.Console.ReadKey();
-            */
+            // Dichiarazione matrice
+            int[,] matrice = new int[8, 8];
+
 
             // Crea Struttura
             Struttura();
-            VisualizzaMatrice(ref matrice);
+            VisualizzaMatrice(matrice);
 
             // Gestisce Punteggio
             Punteggio(Turno, pedG, pedR);
@@ -50,6 +49,20 @@ namespace Esercizio19
 
                     switch (N)
                     {
+                        case 82:
+                            // Reset - per resettare la partita premere 'r'
+                            pedG = 0;
+                            pedR = 0;
+                            posI = 7;
+                            PosOLD = 7;
+                            N = 0;
+                            ResettaMatrice(ref matrice);
+                            Struttura();
+                            VisualizzaMatrice(matrice);
+                            Punteggio(Turno, pedG, pedR);
+                            Pedina(posI, ref PosOLD, N, Turno);
+                            break;
+                        
                         case 37:
                             // Freccia SX
                             if (posI > 7)
@@ -67,27 +80,27 @@ namespace Esercizio19
 
                             // Imposta valore matrice
                             int pedinaPiazzata = ImpostaPedina(ref matrice, posI, Turno);
-                            if (pedinaPiazzata == 0) {
-                                continue;
-                            }
-
-                            if (Turno == 1)
+                            if (pedinaPiazzata != 0)
                             {
-                                pedR++;
-                                Turno++;
+
+                                if (Turno == 1)
+                                {
+                                    pedR++;
+                                    Turno++;
+                                }
+                                else
+                                {
+                                    pedG++;
+                                    Turno--;
+                                }
+
+                                // Gestisce Punteggio
+                                Punteggio(Turno, pedG, pedR);
+                                VisualizzaMatrice(matrice);
+
+                                ControllaChiVince(matrice, pedR, pedG);
+
                             }
-                            else
-                            {
-                                pedG++;
-                                Turno--;
-                            }
-
-                            // Gestisce Punteggio
-                            Punteggio(Turno, pedG, pedR);
-                            VisualizzaMatrice(ref matrice);
-
-                            ControllaChiVince(ref matrice);
-
                             break;
 
                         default:
@@ -99,124 +112,215 @@ namespace Esercizio19
                 }
 
             }
-            while (c != 81);
-
+            while (c != 81);    // Per uscire premere 'q'
 
         }
 
-        static void InizializzaMatrice(ref int[,] m) {
-            for (int r = 0; r < 8; r++) {
-                for (int c = 0; c < 8; c++) {
+        static void ResettaMatrice(ref int[,] m)
+        {
+            for (int r = 0; r < 8; r++)
+            {
+                for (int c = 0; c < 8; c++)
+                {
                     m[r, c] = 0;
                 }
             }
         }
 
-        static void StampaMatrice(ref int[,] m) {
-            for (int r = 0; r < 8; r++) {
-                for (int c = 0; c < 8; c++) {
-                   Console.Write(m[r, c] + ",");
+        static void StampaMatrice(int[,] matrice)
+        {
+            for (int r = 0; r < 8; r++)
+            {
+                for (int c = 0; c < 8; c++)
+                {
+                    Console.Write(matrice[r, c] + ",");
                 }
                 Console.WriteLine("");
-            }            
+            }
         }
 
-        static int ImpostaPedina(ref int[, ] mat, int col, int colore) {
+        static int ImpostaPedina(ref int[,] mat, int col, int colore)
+        {
             int cMatrice = (col - 7) / 4;
             // Verifica colonna piena
-            if (mat[0, cMatrice] != 0) {
-                // Colonna piena
+            if (mat[0, cMatrice] != 0)
+            {
+                // Colonna già piena
                 return 0;
             }
-            // Indivia prima cella vuota
+            // Individua prima cella vuota
             int rMatrice = 7;
-            for(; rMatrice >= 0; rMatrice--) {
-                if (mat[rMatrice, cMatrice] == 0) {
-                    break;
+            bool trovato = false;
+            while (rMatrice >= 0 && trovato == false)
+            {
+                if (mat[rMatrice, cMatrice] == 0)
+                {
+                    trovato = true;
+                } 
+                else
+                {
+                    rMatrice--;
                 }
             }
+
             mat[rMatrice, cMatrice] = colore;
             return 1;
         }
 
-        static void VisualizzaMatrice(ref int[,] m)
+        static void VisualizzaMatrice(int[,] m)
         {
             int R, C;
             int ColI = 5;
             int ColY = ColI;
 
-            for (R = 5; R < 21; R+=2)
+            for (R = 5; R < 21; R += 2)
             {
-                for (C = 7; C < 38; C+=4)
+                for (C = 7; C < 38; C += 4)
                 {
                     Console.SetCursorPosition(C, R);
-                    int rMatrice = (R-5) / 2;
-                    int cMatrice = (C-7) / 4;
-                    if (m[rMatrice, cMatrice] == 0) {
+                    int rMatrice = (R - 5) / 2;
+                    int cMatrice = (C - 7) / 4;
+                    if (m[rMatrice, cMatrice] == 0)
+                    {
                         Console.BackgroundColor = ConsoleColor.Black;
                     }
-                    if (m[rMatrice, cMatrice] == 1) {
+                    if (m[rMatrice, cMatrice] == 1)
+                    {
                         Console.BackgroundColor = ConsoleColor.Red;
                     }
-                    if (m[rMatrice, cMatrice] == 2) {
+                    if (m[rMatrice, cMatrice] == 2)
+                    {
                         Console.BackgroundColor = ConsoleColor.Yellow;
                     }
-                        Console.Write(" ");
+                    Console.Write(" ");
                 }
             }
             Console.SetCursorPosition(0, 0);
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
-        
         }
 
-        static void ControllaChiVince(ref int[,] mat) {
+        static void VisualizzaVittoria(int[] righe, int[] colonne, int coloreVincente)
+        {
+            for (int i = 0; i < 4; i++) {
+                int rCursore = (righe[i] * 2) + 5;
+                int cCursore = (colonne[i] * 4) + 6;
+                Console.SetCursorPosition(cCursore, rCursore);
+                Console.BackgroundColor = DecodificaColore(coloreVincente);
+                Console.Write("   ");
+            }
+            Console.SetCursorPosition(0, 0);
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        static void ControllaChiVince(int[,] mat, int contaRosso, int contaGiallo)
+        {
+
+            if (contaRosso < 4 ) 
+            {
+                // Con meno di 4 celle rosse (il primo a partire) non vince nessuno
+                return;
+            }
+
             // Controlla verticale
-            int coloreVincente = ControllaVerticale(ref mat);
-            if (coloreVincente != 0) {
-                Console.WriteLine("Ha vinto il colore: " + DecodificaColore(coloreVincente) + " !!!!!!");
-                Console.ReadKey();
-                Environment.Exit(0);
+            int coloreVincente = ControllaVerticale(mat);
+            if (coloreVincente != 0)
+            {
+                VisualizzaVincitore(coloreVincente);
             }
+
             // Controlla orizzontale
-            coloreVincente = ControllaOrizzontale(ref mat);
-            if (coloreVincente != 0) {
-                Console.WriteLine("Ha vinto il colore: " + DecodificaColore(coloreVincente) + " !!!!!!");
-                Console.ReadKey();
-                Environment.Exit(0);
+            coloreVincente = ControllaOrizzontale(mat);
+            if (coloreVincente != 0)
+            {
+                VisualizzaVincitore(coloreVincente);
             }
 
-            coloreVincente = ControllaDiagonaleDx(ref mat);
-            if (coloreVincente != 0) {
-                Console.WriteLine("Ha vinto il colore: " + DecodificaColore(coloreVincente) + " !!!!!!");
-                Console.ReadKey();
-                Environment.Exit(0);
+            // Diagonale Discendente: da 0,0 a 7,7 
+            coloreVincente = ControllaSopraDiagonaleDisc(mat);
+            if (coloreVincente != 0)
+            {
+                VisualizzaVincitore(coloreVincente);
+            }
+            coloreVincente = ControllaSottoDiagonaleDisc(mat);
+            if (coloreVincente != 0)
+            {
+                VisualizzaVincitore(coloreVincente);
             }
 
-            coloreVincente = ControllaDiagonaleSx(ref mat);
-            if (coloreVincente != 0) {
-                Console.WriteLine("Ha vinto il colore: " + DecodificaColore(coloreVincente) + " !!!!!!");
-                Console.ReadKey();
-                Environment.Exit(0);
+            // Diagonale Ascendente: da 7,0 a 0,7 
+            coloreVincente = ControllaSopraDiagonaleAsc(mat);
+            if (coloreVincente != 0)
+            {
+                VisualizzaVincitore(coloreVincente);
             }
+            coloreVincente = ControllaSottoDiagonaleAsc(mat);
+            if (coloreVincente != 0)
+            {
+                VisualizzaVincitore(coloreVincente);
+            }
+
+        }
+        static ConsoleColor DecodificaColore(int col)
+        {
+            if (col == 1)
+            {
+                return ConsoleColor.Red;
+            } 
+            return ConsoleColor.Yellow;
         }
 
-        static string DecodificaColore(int col) {
-            return col == 1 ? "ROSSO" : "GIALLO";
+        static string DecodificaNomeColore(int col)
+        {
+            //return col == 1 ? "ROSSO" : "GIALLO";
+            if (col == 1)
+            {
+                return "ROSSO";
+            } 
+            return "GIALLO";
         }
 
-        static int ControllaVerticale(ref int[,] mat) {
-            for (int colonna = 0; colonna < 8; colonna++) {
+        static void VisualizzaVincitore(int coloreVincente) 
+        {
+                Console.SetCursorPosition(5, 23);
+                Console.WriteLine("Ha vinto il " + DecodificaNomeColore(coloreVincente) + " !!!!!!");
+                Console.ReadKey();
+                Environment.Exit(0);
+        }
+
+        static int ControllaVerticale(int[,] mat)
+        {
+            int[] righe = new int[4];
+            int[] colonne = new int[4];
+            for (int colonna = 0; colonna < 8; colonna++)
+            {
+                // Prima riga in basso
                 int coloreDaControllare = mat[7, colonna];
+                righe[0] = 7;
+                colonne[0] = colonna;
                 int contatore = 1;
-                for(int riga = 6; riga >= 0; riga--) {
-                    if (mat[riga, colonna] == coloreDaControllare && coloreDaControllare != 0) {
+                // Elaborazione dalla seconda riga verso l'alto
+                for (int riga = 6; riga >= 0; riga--)
+                {
+                    if (mat[riga, colonna] == coloreDaControllare && coloreDaControllare != 0)
+                    {
+                        righe[contatore] = riga;
+                        colonne[contatore] = colonna;
                         contatore++;
-                    } else {
+                    }
+                    else
+                    {
                         coloreDaControllare = mat[riga, colonna];
                         contatore = 1;
+                        righe = new int[4];
+                        colonne = new int[4];
+                        righe[0] = riga;
+                        colonne[0] = colonna;
                     }
-                    if (contatore == 4) {
+                    if (contatore == 4)
+                    {
+                        VisualizzaVittoria(righe, colonne, coloreDaControllare);
                         return coloreDaControllare;
                     }
                 }
@@ -224,18 +328,38 @@ namespace Esercizio19
             return 0;
         }
 
-        static int ControllaOrizzontale(ref int[,] mat) {
-            for (int riga = 7; riga >= 0; riga--) {
+        static int ControllaOrizzontale(int[,] mat)
+        {
+            int[] righe = new int[4];
+            int[] colonne = new int[4];
+            for (int riga = 7; riga >= 0; riga--)
+            {
+                // Prima colonna a sinistra
                 int coloreDaControllare = mat[riga, 0];
+                righe[0] = riga;
+                colonne[0] = 0;
                 int contatore = 1;
-                for(int colonna = 1; colonna < 8; colonna++) {
-                    if (mat[riga, colonna] == coloreDaControllare && coloreDaControllare != 0) {
+                // Elaborazione dalla seconda colonna verso destra
+                for (int colonna = 1; colonna < 8; colonna++)
+                {
+                    if (mat[riga, colonna] == coloreDaControllare && coloreDaControllare != 0)
+                    {
+                        righe[contatore] = riga;
+                        colonne[contatore] = colonna;
                         contatore++;
-                    } else {
+                    }
+                    else
+                    {
                         coloreDaControllare = mat[riga, colonna];
                         contatore = 1;
+                        righe = new int[4];
+                        colonne = new int[4];
+                        righe[0] = riga;
+                        colonne[0] = colonna;
                     }
-                    if (contatore == 4) {
+                    if (contatore == 4)
+                    {
+                        VisualizzaVittoria(righe, colonne, coloreDaControllare);
                         return coloreDaControllare;
                     }
                 }
@@ -243,19 +367,179 @@ namespace Esercizio19
             return 0;
         }
 
-        static int ControllaDiagonaleDx(ref int[,] mat) {
-            // TODO: to implement!
+        static int ControllaSopraDiagonaleAsc(int[,] mat)
+        {
+            int[] righe = new int[4];
+            int[] colonne = new int[4];
+            // Si parte dalla prima diagonale lunga 4 celle
+            for(int diagonale = 3; diagonale < 8; diagonale++)
+            {
+                int coloreDaControllare = mat[diagonale, 0];
+                righe[0] = diagonale;
+                colonne[0] = 0;
+                int contatore = 0;
+                for (int riga = diagonale; riga >= 0; riga--)
+                {
+                    int colonna = diagonale - riga;
+                    if (mat[riga, colonna] == coloreDaControllare && coloreDaControllare != 0)
+                    {
+                        righe[contatore] = riga;
+                        colonne[contatore] = colonna;
+                        contatore++;
+                    }
+                    else
+                    {
+                        coloreDaControllare = mat[riga, colonna];
+                        contatore = 1;
+                        righe = new int[4];
+                        colonne = new int[4];
+                        righe[0] = riga;
+                        colonne[0] = colonna;
+                    }
+                    if (contatore == 4)
+                    {
+                        VisualizzaVittoria(righe, colonne, coloreDaControllare);
+                        return coloreDaControllare;
+                    }
+                }                
+            }
             return 0;
         }
 
-        static int ControllaDiagonaleSx(ref int[,] mat) {
-            // TODO: to implement!
+        static int ControllaSottoDiagonaleAsc(int[,] mat)
+        {
+            int[] righe = new int[4];
+            int[] colonne = new int[4];
+            // Si parte dalla prima diagonale lunga 4 celle
+            for (int diagonale = 3; diagonale < 8; diagonale++)
+            {
+                int coloreDaControllare = mat[7, 7 - diagonale];
+                righe[0] = 7;
+                colonne[0] = 7 - diagonale;
+                int contatore = 0;
+                for (int j = 0; j <= diagonale; j++)
+                {
+                    int riga = 7 - j;
+                    int colonna = 7 - diagonale + j;
+                    // Scarto diagonale più lunga perchè già elaborata
+                    if (colonna > 0)
+                    {
+                        if (mat[riga, colonna] == coloreDaControllare && coloreDaControllare != 0)
+                        {
+                            righe[contatore] = riga;
+                            colonne[contatore] = colonna;
+                            contatore++;
+                        }
+                        else
+                        {
+                            coloreDaControllare = mat[riga, colonna];
+                            contatore = 1;
+                            righe = new int[4];
+                            colonne = new int[4];
+                            righe[0] = riga;
+                            colonne[0] = colonna;
+                        }
+                        if (contatore == 4)
+                        {
+                            VisualizzaVittoria(righe, colonne, coloreDaControllare);
+                            return coloreDaControllare;
+                        }
+                    }
+                }
+
+            }
             return 0;
         }
 
+        static int ControllaSottoDiagonaleDisc(int[,] mat)
+        {
+            int[] righe = new int[4];
+            int[] colonne = new int[4];
+            // Si parte dalla prima diagonale lunga 4 celle
+            for (int diagonale = 4; diagonale <= 8; diagonale++)
+            {
+                int coloreDaControllare = mat[8 - diagonale, 0];
+                righe[0] = diagonale - 8;
+                colonne[0] = 0;
+                int contatore = 0;
+                for (int riga = 8 - diagonale; riga < 8; riga++)
+                {
+                    int colonna = riga - (8 - diagonale);
+                    //Console.Write("[" + riga + "," + colonna + "],");
+                    
+                    if (mat[riga, colonna] == coloreDaControllare && coloreDaControllare != 0)
+                    {
+                        righe[contatore] = riga;
+                        colonne[contatore] = colonna;
+                        contatore++;
+                    }
+                    else
+                    {
+                        coloreDaControllare = mat[riga, colonna];
+                        contatore = 1;
+                        righe = new int[4];
+                        colonne = new int[4];
+                        righe[0] = riga;
+                        colonne[0] = colonna;
+                    }
+                    if (contatore == 4)
+                    {
+                        VisualizzaVittoria(righe, colonne, coloreDaControllare);
+                        return coloreDaControllare;
+                    }
+                }
+                //Console.WriteLine("");
+            }
+            return 0;
+        }
 
-// ------------------------------------------------------------------------------------------------
+        static int ControllaSopraDiagonaleDisc(int[,] mat)
+        {
+            int[] righe = new int[4];
+            int[] colonne = new int[4];
+            // Si parte dalla prima diagonale lunga 4 celle
+            for (int diagonale = 4; diagonale <= 8; diagonale++)
+            {
+                int coloreDaControllare = mat[8 - diagonale, 0];
+                righe[0] = 8 - diagonale;
+                colonne[0] = 0;
+                int contatore = 0;
+                for (int j = 8 - diagonale; j < 8; j++)
+                {
+                    int riga = j - (8 - diagonale);
+                    int colonna = j;
+                    // Scarto diagonale più liunga perchè già elaborata 
+                    if (colonna > 0) 
+                    {
+                        //Console.Write("[" + riga + "," + colonna + "],");
+                        if (mat[riga, colonna] == coloreDaControllare && coloreDaControllare != 0)
+                        {
+                            righe[contatore] = riga;
+                            colonne[contatore] = colonna;
+                            contatore++;
+                        }
+                        else
+                        {
+                            coloreDaControllare = mat[riga, colonna];
+                            contatore = 1;
+                            righe = new int[4];
+                            colonne = new int[4];
+                            righe[0] = riga;
+                            colonne[0] = colonna;
+                        }
+                        if (contatore == 4)
+                        {
+                            VisualizzaVittoria(righe, colonne, coloreDaControllare);
+                            return coloreDaControllare;
+                        }
+                    }
+                }
+                //Console.WriteLine("");
+            }
+            return 0;
+        }
 
+        // ------------------------------------------------------------------------------------------------
 
         static void Struttura()
         {
@@ -334,10 +618,10 @@ namespace Esercizio19
             Console.ForegroundColor = ConsoleColor.Black;
 
             if (p == 1)
-                Console.BackgroundColor = ConsoleColor.Red;                
+                Console.BackgroundColor = ConsoleColor.Red;
             else
                 Console.BackgroundColor = ConsoleColor.Yellow;
-            
+
             Console.Write("#");
 
             // Mi sposto o verso DX o verso SX
@@ -350,6 +634,5 @@ namespace Esercizio19
             Console.ForegroundColor = ConsoleColor.White;
 
         }
-
     }
 }
