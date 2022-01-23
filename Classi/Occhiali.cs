@@ -1,9 +1,27 @@
 ﻿class Occhiali {
-    private string marcaMontatura;
+    public string MarcaMontatura { get; set; } = "";
+    public double Costo { get; set; } = 0.0;
+    public int Sconto { get; set; } = 0;
 
-    private double costo;
-    private int sconto = 0;
+    public Occhiali() { }
 
+    public Occhiali (string MarcaMontatura, double Costo, int Sconto) {
+        this.MarcaMontatura = MarcaMontatura;
+        this.Costo = Costo;
+        this.Sconto = Sconto;
+    }
+
+    public virtual double CalcolaPrezzo() {
+        return Costo * (1 - (Sconto / 100.0));
+    }
+
+    public virtual string VisualizzaOcchiale() {
+        return MarcaMontatura + ", " + 
+                Costo.ToString("F2") + "€, " + 
+                Sconto + "%";
+    } 
+
+    /*
     public string getMarcaMontatura() {
         return marcaMontatura;
     }
@@ -25,11 +43,14 @@
     }
 
     public void setSconto(int sconto) {
+        if (sconto < 0 || sconto > 100) {
+            throw new ArgumentException("Valore sconto non ammesso");
+        }
         this.sconto = sconto;
     }
+    */
 
     public override string ToString() {
-        return getMarcaMontatura() + "," + getCosto + " €, " + getSconto + "%";
-    } 
-
+        return VisualizzaOcchiale();
+    }
 }
