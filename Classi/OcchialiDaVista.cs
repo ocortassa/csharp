@@ -22,7 +22,7 @@ class OcchialiDaVista : Occhiali {
     }
     public override string VisualizzaOcchiale() {
         return base.VisualizzaOcchiale() + 
-            ", Correzione dx " + CorrezioneLenteDx + "/ sx " + CorrezioneLenteSx +
+            ", Correzione dx " + CorrezioneLenteDx + "/sx " + CorrezioneLenteSx +
             ", Costo lenti: " + CostoLenti.ToString("F2") + "€"; 
     }
 

@@ -16,7 +16,7 @@
     }
 
     public virtual string VisualizzaOcchiale() {
-        return MarcaMontatura + ", " + 
+        return ">>>" + MarcaMontatura + ", " + 
                 Costo.ToString("F2") + "€, " + 
                 Sconto + "%";
     } 
